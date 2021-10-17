@@ -1,0 +1,4 @@
+Name: s3-api
+Host: 0.0.0.0
+Port: 8888
+MaxBytes: 33554432
