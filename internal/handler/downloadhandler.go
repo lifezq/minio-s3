@@ -1,12 +1,13 @@
 package handler
 
 import (
-	"github.com/tal-tech/go-zero/core/logx"
 	"net/http"
 
-	"github.com/lifezq/minio-s3/api/internal/logic"
-	"github.com/lifezq/minio-s3/api/internal/svc"
-	"github.com/lifezq/minio-s3/api/internal/types"
+	"github.com/lifezq/minio-s3/internal/logic"
+	"github.com/lifezq/minio-s3/internal/svc"
+	"github.com/lifezq/minio-s3/internal/types"
+
+	"github.com/tal-tech/go-zero/core/logx"
 	"github.com/tal-tech/go-zero/rest/httpx"
 )
 

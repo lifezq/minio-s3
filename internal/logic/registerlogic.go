@@ -3,16 +3,17 @@ package logic
 import (
 	"context"
 	"fmt"
-	"github.com/lifezq/minio-s3/api/client"
-	"github.com/lifezq/minio-s3/api/internal/svc"
-	"github.com/lifezq/minio-s3/api/internal/types"
-	"github.com/lifezq/minio-s3/api/model"
-	"github.com/lifezq/minio-s3/api/utils"
-	"github.com/rs/xid"
 	"os"
 	"os/exec"
 	"time"
 
+	"github.com/lifezq/minio-s3/client"
+	"github.com/lifezq/minio-s3/internal/svc"
+	"github.com/lifezq/minio-s3/internal/types"
+	"github.com/lifezq/minio-s3/model"
+	"github.com/lifezq/minio-s3/utils"
+
+	"github.com/rs/xid"
 	"github.com/tal-tech/go-zero/core/logx"
 )
 

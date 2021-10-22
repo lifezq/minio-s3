@@ -4,19 +4,21 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"github.com/lifezq/minio-s3/api/client"
-	"github.com/lifezq/minio-s3/api/internal/config"
-	"github.com/lifezq/minio-s3/api/internal/types"
-	"github.com/lifezq/minio-s3/api/model"
 	"github.com/minio/minio-go/v7"
+	"log"
+	"os/exec"
+	"time"
+
+	"github.com/lifezq/minio-s3/client"
+	"github.com/lifezq/minio-s3/internal/config"
+	"github.com/lifezq/minio-s3/internal/types"
+	"github.com/lifezq/minio-s3/model"
+
 	"github.com/minio/minio-go/v7/pkg/credentials"
 	"github.com/tal-tech/go-zero/core/logx"
 	"github.com/tal-tech/go-zero/core/stores/cache"
 	"github.com/tal-tech/go-zero/core/stores/sqlx"
 	"github.com/tal-tech/go-zero/core/syncx"
-	"log"
-	"os/exec"
-	"time"
 )
 
 type ServiceContext struct {

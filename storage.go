@@ -3,11 +3,12 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/lifezq/minio-s3/api/internal/config"
-	"github.com/lifezq/minio-s3/api/internal/handler"
-	"github.com/lifezq/minio-s3/api/internal/middleware"
-	"github.com/lifezq/minio-s3/api/internal/svc"
 	"net/http"
+
+	"github.com/lifezq/minio-s3/internal/config"
+	"github.com/lifezq/minio-s3/internal/handler"
+	"github.com/lifezq/minio-s3/internal/middleware"
+	"github.com/lifezq/minio-s3/internal/svc"
 
 	"github.com/tal-tech/go-zero/core/conf"
 	"github.com/tal-tech/go-zero/rest"
@@ -20,10 +21,10 @@ var configFile = flag.String("f", "etc/storage-api.yaml", "the config file")
 func main() {
 	flag.Parse()
 
-	go http.ListenAndServe("0.0.0.0:6060", nil)
-
 	var c config.Config
 	conf.MustLoad(*configFile, &c)
+
+	go http.ListenAndServe(fmt.Sprintf("0.0.0.0:%d", c.PprofPort), nil)
 
 	ctx := svc.NewServiceContext(c)
 	server := rest.MustNewServer(c.RestConf)

@@ -1,21 +1,16 @@
-module github.com/lifezq/minio-s3/api
+module github.com/lifezq/minio-s3
 
 go 1.17
 
 require (
-	github.com/go-redis/redis/v8 v8.11.4
 	github.com/minio/minio-go/v7 v7.0.15
-	github.com/prometheus/common v0.26.0
-	github.com/rs/xid v1.2.1
+	github.com/rs/xid v1.3.0
 	github.com/tal-tech/go-zero v1.2.2
 )
 
 require (
-	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751 // indirect
-	github.com/alecthomas/units v0.0.0-20190924025748-f65c72e2690d // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
-	github.com/cespare/xxhash/v2 v2.1.2 // indirect
-	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
+	github.com/cespare/xxhash/v2 v2.1.1 // indirect
 	github.com/dustin/go-humanize v1.0.0 // indirect
 	github.com/go-redis/redis v6.15.7+incompatible // indirect
 	github.com/go-sql-driver/mysql v1.5.0 // indirect
@@ -36,6 +31,7 @@ require (
 	github.com/openzipkin/zipkin-go v0.2.5 // indirect
 	github.com/prometheus/client_golang v1.11.0 // indirect
 	github.com/prometheus/client_model v0.2.0 // indirect
+	github.com/prometheus/common v0.26.0 // indirect
 	github.com/prometheus/procfs v0.6.0 // indirect
 	github.com/sirupsen/logrus v1.8.1 // indirect
 	github.com/spaolacci/murmur3 v1.1.0 // indirect
@@ -51,7 +47,6 @@ require (
 	golang.org/x/text v0.3.7 // indirect
 	google.golang.org/grpc v1.41.0 // indirect
 	google.golang.org/protobuf v1.27.1 // indirect
-	gopkg.in/alecthomas/kingpin.v2 v2.2.6 // indirect
 	gopkg.in/ini.v1 v1.57.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )

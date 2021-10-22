@@ -1,6 +1,7 @@
 Name: storage-api
 Host: 0.0.0.0
 Port: 8888
+PprofPort: 6060
 Datasource: root:123456@tcp(localhost:3306)/storage
 StorageEngine: MiniO
 CacheConf:

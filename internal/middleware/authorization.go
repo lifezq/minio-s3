@@ -3,13 +3,15 @@ package middleware
 import (
 	"database/sql"
 	"errors"
-	"github.com/lifezq/minio-s3/api/internal/config"
-	"github.com/lifezq/minio-s3/api/internal/types"
+	"net/http"
+	"strings"
+
+	"github.com/lifezq/minio-s3/internal/config"
+	"github.com/lifezq/minio-s3/internal/types"
+
 	"github.com/tal-tech/go-zero/core/stores/cache"
 	"github.com/tal-tech/go-zero/core/syncx"
 	"github.com/tal-tech/go-zero/rest/httpx"
-	"net/http"
-	"strings"
 )
 
 type Authorization struct {

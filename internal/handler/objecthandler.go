@@ -3,8 +3,9 @@ package handler
 import (
 	"net/http"
 
-	"github.com/lifezq/minio-s3/api/internal/logic"
-	"github.com/lifezq/minio-s3/api/internal/svc"
+	"github.com/lifezq/minio-s3/internal/logic"
+	"github.com/lifezq/minio-s3/internal/svc"
+
 	"github.com/tal-tech/go-zero/rest/httpx"
 )
 
