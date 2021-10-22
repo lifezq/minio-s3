@@ -1,0 +1,73 @@
+type (
+	uploadResp {
+		Url string `json:"url"`
+	}
+)
+
+type (
+	removeReq {
+		Bucket   string `json:"bucket"`
+		ObjectID string `json:"objectID"`
+		Path     string `json:"path"`
+	}
+)
+
+type (
+	downloadReq {
+		Bucket   string `json:"bucket"`
+		ObjectID string `json:"objectID"`
+		Path     string `json:"path"`
+	}
+)
+
+type (
+	registerReq {
+		TenantID string `json:"tenantID"`
+		Namespace string `json:"namespace"`  // 租户下二级分类，如：平台、子公司等
+		UserID   string `json:"userID"`
+	}
+)
+
+type (
+	registerResp {
+		AccessKey string `json:"accessKey"`
+		SecretKey string `json:"secretKey"`
+	}
+)
+
+type (
+	tokenReq {
+		AccessKey string `form:"accessKey"`
+		SecretKey string `form:"secretKey"`
+		Path      string `form:"path"`
+	}
+)
+
+type (
+	tokenResp {
+		S3Authorization string `json:"S3Authorization"`
+		ExpireIn        int64  `json:"expireIn"`
+	}
+)
+
+service storage-api {
+	@doc "文件上传/FileUpload"
+	@handler ObjectHandler
+	post /upload() returns(uploadResp)
+	
+	@doc "文件删除/FileRemove"
+	@handler RemoveHandler
+	post /remove(removeReq) returns()
+	
+	@doc "文件下载/FileDownload"
+	@handler DownloadHandler
+	get /download(downloadReq) returns()
+	
+	@doc "注册用户/RegisterUser"
+	@handler RegisterHandler
+	post /registerUser(registerReq) returns(registerResp)
+	
+	@doc "申请令牌/AskToken"
+	@handler TokenHandler
+	post /askToken(tokenReq) returns(tokenResp)
+}

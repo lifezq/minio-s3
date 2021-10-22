@@ -1,0 +1,17 @@
+Name: storage-api
+Host: 0.0.0.0
+Port: 8888
+Datasource: root:123456@tcp(localhost:3306)/storage
+StorageEngine: MiniO
+CacheConf:
+  - Host: 192.168.56.1:6379
+    Type: cluster
+    Pass:
+Minio:
+  ServerName: myminio
+  Endpoint: 192.168.1.212:9000
+  AccessKey: miniouser
+  SecretKey: miniopwd
+  UseSSL: false
+Log:
+  Level: info
