@@ -7,21 +7,19 @@ import (
 	"gitlab.energy-envision.com/storage/internal/svc"
 	"gitlab.energy-envision.com/storage/internal/types"
 
-	"github.com/tal-tech/go-zero/core/logx"
 	"github.com/tal-tech/go-zero/rest/httpx"
 )
 
-func TokenHandler(ctx *svc.ServiceContext) http.HandlerFunc {
+func ObjectListHandler(ctx *svc.ServiceContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var req types.TokenReq
+		var req types.ObjectListReq
 		if err := httpx.Parse(r, &req); err != nil {
-			logx.Errorf("请求发生错误：%v", err)
 			httpx.Error(w, err)
 			return
 		}
 
-		l := logic.NewTokenLogic(r.Context(), ctx)
-		resp, err := l.Token(req)
+		l := logic.NewObjectListLogic(r.Context(), ctx)
+		resp, err := l.ObjectList(req)
 		if err != nil {
 			httpx.Error(w, err)
 		} else {

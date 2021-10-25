@@ -3,9 +3,9 @@ package handler
 import (
 	"net/http"
 
-	"github.com/lifezq/minio-s3/internal/logic"
-	"github.com/lifezq/minio-s3/internal/svc"
-	"github.com/lifezq/minio-s3/internal/types"
+	"gitlab.energy-envision.com/storage/internal/logic"
+	"gitlab.energy-envision.com/storage/internal/svc"
+	"gitlab.energy-envision.com/storage/internal/types"
 
 	"github.com/tal-tech/go-zero/core/logx"
 	"github.com/tal-tech/go-zero/rest/httpx"

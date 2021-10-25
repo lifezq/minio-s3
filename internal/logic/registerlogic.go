@@ -3,15 +3,16 @@ package logic
 import (
 	"context"
 	"fmt"
+	"golang.org/x/crypto/bcrypt"
 	"os"
 	"os/exec"
 	"time"
 
-	"github.com/lifezq/minio-s3/client"
-	"github.com/lifezq/minio-s3/internal/svc"
-	"github.com/lifezq/minio-s3/internal/types"
-	"github.com/lifezq/minio-s3/model"
-	"github.com/lifezq/minio-s3/utils"
+	"gitlab.energy-envision.com/storage/client"
+	"gitlab.energy-envision.com/storage/internal/svc"
+	"gitlab.energy-envision.com/storage/internal/types"
+	"gitlab.energy-envision.com/storage/model"
+	"gitlab.energy-envision.com/storage/utils"
 
 	"github.com/rs/xid"
 	"github.com/tal-tech/go-zero/core/logx"
@@ -33,11 +34,23 @@ func NewRegisterLogic(ctx context.Context, svcCtx *svc.ServiceContext) RegisterL
 
 func (l *RegisterLogic) Register(req types.RegisterReq) (*types.RegisterResp, error) {
 
-	l.Logger.Infof("Register.receive req:%+v\n", req)
+	l.Logger.Infof("Register.receive req:%+v", req)
+
+	if !types.ValidNamespace(l.svcCtx.Config.ValidNamespace, req.Namespace) {
+		l.Logger.Errorf("未注册的Namespace[%s]，请联系管理员, %s", req.Namespace)
+		return &types.RegisterResp{}, fmt.Errorf("未注册的Namespace[%s]，请联系管理员, %s", req.Namespace)
+	}
+
 	accessKey := xid.New().String()
 	secretKey := utils.GenerateSecretKey(accessKey)
+	hashSecretKey, err := bcrypt.GenerateFromPassword([]byte(secretKey), 10)
+	if err != nil {
+		l.Logger.Errorf("用户secretKey生成错误, %s\n", err.Error())
+		return &types.RegisterResp{}, fmt.Errorf("用户secretKey生成错误,%s", err.Error())
+	}
+
 	ctx := context.Background()
-	err := exec.CommandContext(ctx, "mc", []string{"admin", "user", "add",
+	err = exec.CommandContext(ctx, "mc", []string{"admin", "user", "add",
 		l.svcCtx.Config.Minio.ServerName, accessKey, secretKey}...).Run()
 	if err != nil {
 		l.Logger.Errorf("创建用户失败：%s\n", err.Error())
@@ -54,7 +67,7 @@ func (l *RegisterLogic) Register(req types.RegisterReq) (*types.RegisterResp, er
 		}
 	}
 
-	policy := `{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":["s3:*"],"Resource":["arn:aws:s3:::` + bucket + `/` + types.Home(accessKey) + `/*"]}]}`
+	policy := `{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":["s3:*"],"Resource":["arn:aws:s3:::` + bucket + `/` + types.BucketHome(accessKey) + `/*"]}]}`
 	policyFile := fmt.Sprintf("./%s.policy", accessKey)
 	fp, err := os.OpenFile(policyFile, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 644)
 	if err != nil {
@@ -67,21 +80,21 @@ func (l *RegisterLogic) Register(req types.RegisterReq) (*types.RegisterResp, er
 	defer os.Remove(policyFile)
 
 	err = exec.CommandContext(ctx, "mc", []string{"admin", "policy", "add",
-		l.svcCtx.Config.Minio.ServerName, types.PolicyName(req.TenantID, req.Namespace, req.UserID), policyFile}...).Run()
+		l.svcCtx.Config.Minio.ServerName, types.BucketPolicyName(req.TenantID, req.Namespace, req.UserID), policyFile}...).Run()
 	if err != nil {
 		l.Logger.Errorf("添加访问策略失败：%s\n", err.Error())
 		return &types.RegisterResp{}, fmt.Errorf("添加访问策略失败,%s", err.Error())
 	}
 
 	err = exec.CommandContext(ctx, "mc", []string{"admin", "group", "add",
-		l.svcCtx.Config.Minio.ServerName, types.GroupName(req.TenantID, req.Namespace), accessKey}...).Run()
+		l.svcCtx.Config.Minio.ServerName, types.BucketGroupName(req.TenantID, req.Namespace), accessKey}...).Run()
 	if err != nil {
 		l.Logger.Errorf("用户组添加用户失败：%s\n", err.Error())
 		return &types.RegisterResp{}, fmt.Errorf("用户组添加用户失败,%s", err.Error())
 	}
 
 	err = exec.CommandContext(ctx, "mc", []string{"admin", "policy", "set",
-		l.svcCtx.Config.Minio.ServerName, types.PolicyName(req.TenantID, req.Namespace, req.UserID), "user=" + accessKey}...).Run()
+		l.svcCtx.Config.Minio.ServerName, types.BucketPolicyName(req.TenantID, req.Namespace, req.UserID), "user=" + accessKey}...).Run()
 	if err != nil {
 		l.Logger.Errorf("设置用户权限失败：%s\n", err.Error())
 		return &types.RegisterResp{}, fmt.Errorf("设置用户权限失败,%s", err.Error())
@@ -96,7 +109,7 @@ func (l *RegisterLogic) Register(req types.RegisterReq) (*types.RegisterResp, er
 	_, err = l.svcCtx.UserModel.Insert(model.User{
 		Id:        id + 1,
 		AccessKey: accessKey,
-		SecretKey: secretKey,
+		SecretKey: string(hashSecretKey),
 		TenantId:  req.TenantID,
 		Namespace: req.Namespace,
 		UserId:    req.UserID,

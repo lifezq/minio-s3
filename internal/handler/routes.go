@@ -4,13 +4,12 @@ package handler
 import (
 	"net/http"
 
-	"github.com/lifezq/minio-s3/internal/svc"
+	"gitlab.energy-envision.com/storage/internal/svc"
 
 	"github.com/tal-tech/go-zero/rest"
 )
 
 func RegisterHandlers(engine *rest.Server, serverCtx *svc.ServiceContext) {
-
 	engine.AddRoutes(
 		[]rest.Route{
 			{
@@ -27,6 +26,11 @@ func RegisterHandlers(engine *rest.Server, serverCtx *svc.ServiceContext) {
 				Method:  http.MethodGet,
 				Path:    "/object/download",
 				Handler: DownloadHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/object/list",
+				Handler: ObjectListHandler(serverCtx),
 			},
 		},
 	)

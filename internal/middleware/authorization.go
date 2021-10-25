@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/lifezq/minio-s3/internal/config"
-	"github.com/lifezq/minio-s3/internal/types"
+	"gitlab.energy-envision.com/storage/internal/config"
+	"gitlab.energy-envision.com/storage/internal/types"
 
 	"github.com/tal-tech/go-zero/core/stores/cache"
 	"github.com/tal-tech/go-zero/core/syncx"
@@ -31,15 +31,22 @@ func (a *Authorization) AuthorizationHandle(next http.HandlerFunc) http.HandlerF
 
 		if strings.HasPrefix(r.URL.Path, "/object") {
 
-			if strings.Trim(r.Header.Get(types.S3_AUTHORIZATION), " ") == "" {
+			s3Authorization := strings.Trim(r.Header.Get(types.S3_AUTHORIZATION), " ")
+			if s3Authorization == "" {
 				w.WriteHeader(401)
 				httpx.Error(w, errors.New("Forbidden"))
 				return
 			}
 
-			var token types.S3AuthorizationToken
-			err := a.cache.Get(types.CacheS3AuthorizationKey(r.Header.Get(types.S3_AUTHORIZATION)), &token)
-			if err != nil || token.AuthorizationOK != types.S3_AUTHORIZATION_OK {
+			token, err := types.ParseToken(s3Authorization)
+			if err != nil {
+				w.WriteHeader(401)
+				httpx.Error(w, errors.New("Forbidden"))
+				return
+			}
+
+			err = token.Valid()
+			if err != nil {
 				w.WriteHeader(401)
 				httpx.Error(w, errors.New("Forbidden"))
 				return

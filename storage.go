@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/lifezq/minio-s3/internal/config"
-	"github.com/lifezq/minio-s3/internal/handler"
-	"github.com/lifezq/minio-s3/internal/middleware"
-	"github.com/lifezq/minio-s3/internal/svc"
+	"gitlab.energy-envision.com/storage/internal/config"
+	"gitlab.energy-envision.com/storage/internal/handler"
+	"gitlab.energy-envision.com/storage/internal/middleware"
+	"gitlab.energy-envision.com/storage/internal/svc"
 
 	"github.com/tal-tech/go-zero/core/conf"
 	"github.com/tal-tech/go-zero/rest"

@@ -6,16 +6,35 @@ type UploadResp struct {
 }
 
 type RemoveReq struct {
-	S3Authorization string `json:"S3Authorization,optional"`
+	S3Authorization string `json:"s3Authorization,optional"`
+	Bucket          string `json:"bucket"`
 	ObjectID        string `json:"objectID"`
 	Path            string `json:"path"`
 }
 
 type DownloadReq struct {
-	S3Authorization string `json:"S3Authorization,optional"`
-	Bucket          string `form:"bucket"`
-	ObjectID        string `form:"objectID"`
-	Path            string `form:"path"`
+	S3Authorization string `json:"s3Authorization,optional"`
+	Bucket          string `json:"bucket"`
+	ObjectID        string `json:"objectID"`
+	Path            string `json:"path"`
+}
+
+type DownloadResp struct {
+	Url string `json:"url"`
+}
+
+type ObjectListReq struct {
+	Prefix     string `json:"prefix"`     //Only list objects with the prefix
+	StartAfter string `json:"startAfter"` //start listing lexically at this object onwards
+	Recursive  bool   `json:"recursive"`  //Ignore '/' delimiter
+	MaxKeys    int    `json:"maxKeys"`    //The maximum number of objects
+}
+
+type ObjectListResp struct {
+	ObjectName   string `json:"objectName"`
+	Size         int64  `json:"size"`
+	ETag         string `json:"eTag"`
+	LastModified string `json:"lastModified"`
 }
 
 type RegisterReq struct {
@@ -30,9 +49,9 @@ type RegisterResp struct {
 }
 
 type TokenReq struct {
-	AccessKey string `json:"accessKey"`
-	SecretKey string `json:"secretKey"`
-	Path      string `json:"path"`
+	AccessKey string `form:"accessKey"`
+	SecretKey string `form:"secretKey"`
+	Path      string `form:"path"`
 }
 
 type TokenResp struct {

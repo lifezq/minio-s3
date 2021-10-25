@@ -2,8 +2,11 @@ Name: storage-api
 Host: 0.0.0.0
 Port: 8888
 PprofPort: 6060
-Datasource: root:123456@tcp(localhost:3306)/storage
+Datasource: root:123456@tcp(localhost:3306)/storage?charset=UTF8&parseTime=true
 StorageEngine: MiniO
+TokenExpireIn: 86400
+StorageHost: localhost:8888
+ValidNamespace: AI
 CacheConf:
   - Host: 192.168.56.1:6379
     Type: cluster

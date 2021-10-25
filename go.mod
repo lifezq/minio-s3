@@ -1,11 +1,14 @@
-module github.com/lifezq/minio-s3
+module gitlab.energy-envision.com/storage
 
 go 1.17
 
 require (
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
+	github.com/lifezq/goutils v0.0.0-20180518145038-e8a312ff2cc8
 	github.com/minio/minio-go/v7 v7.0.15
 	github.com/rs/xid v1.3.0
 	github.com/tal-tech/go-zero v1.2.2
+	golang.org/x/crypto v0.0.0-20201216223049-8b5274cf687f
 )
 
 require (
@@ -41,7 +44,6 @@ require (
 	go.opentelemetry.io/otel/sdk v1.0.1 // indirect
 	go.opentelemetry.io/otel/trace v1.0.1 // indirect
 	go.uber.org/automaxprocs v1.3.0 // indirect
-	golang.org/x/crypto v0.0.0-20201216223049-8b5274cf687f // indirect
 	golang.org/x/net v0.0.0-20210928044308-7d9f5e0b762b // indirect
 	golang.org/x/sys v0.0.0-20211002104244-808efd93c36d // indirect
 	golang.org/x/text v0.3.7 // indirect

@@ -15,9 +15,12 @@ type MinioConfig struct {
 
 type Config struct {
 	rest.RestConf
-	PprofPort     uint16
-	CacheConf     cache.CacheConf
-	Minio         MinioConfig
-	Datasource    string
-	StorageEngine string
+	PprofPort      uint16
+	CacheConf      cache.CacheConf
+	Minio          MinioConfig
+	Datasource     string
+	StorageEngine  string
+	TokenExpireIn  int64
+	StorageHost    string
+	ValidNamespace string
 }

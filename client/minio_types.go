@@ -1,3 +1,6 @@
+//go:build minio
+// +build minio
+
 package client
 
 import (

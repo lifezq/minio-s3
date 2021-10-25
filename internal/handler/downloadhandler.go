@@ -3,9 +3,9 @@ package handler
 import (
 	"net/http"
 
-	"github.com/lifezq/minio-s3/internal/logic"
-	"github.com/lifezq/minio-s3/internal/svc"
-	"github.com/lifezq/minio-s3/internal/types"
+	"gitlab.energy-envision.com/storage/internal/logic"
+	"gitlab.energy-envision.com/storage/internal/svc"
+	"gitlab.energy-envision.com/storage/internal/types"
 
 	"github.com/tal-tech/go-zero/core/logx"
 	"github.com/tal-tech/go-zero/rest/httpx"
@@ -20,12 +20,14 @@ func DownloadHandler(ctx *svc.ServiceContext) http.HandlerFunc {
 			return
 		}
 
+		req.S3Authorization = r.Header.Get(types.S3_AUTHORIZATION)
+
 		l := logic.NewDownloadLogic(r.Context(), ctx)
-		err := l.Download(req)
+		resp, err := l.Download(req)
 		if err != nil {
 			httpx.Error(w, err)
 		} else {
-			httpx.Ok(w)
+			httpx.OkJson(w, resp)
 		}
 	}
 }

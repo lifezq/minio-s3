@@ -5,17 +5,18 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/minio/minio-go/v7"
+	"github.com/tal-tech/go-zero/core/logx"
+	"gitlab.energy-envision.com/storage/internal/storage"
 	"log"
 	"os/exec"
 	"time"
 
-	"github.com/lifezq/minio-s3/client"
-	"github.com/lifezq/minio-s3/internal/config"
-	"github.com/lifezq/minio-s3/internal/types"
-	"github.com/lifezq/minio-s3/model"
+	"gitlab.energy-envision.com/storage/client"
+	"gitlab.energy-envision.com/storage/internal/config"
+	"gitlab.energy-envision.com/storage/internal/types"
+	"gitlab.energy-envision.com/storage/model"
 
 	"github.com/minio/minio-go/v7/pkg/credentials"
-	"github.com/tal-tech/go-zero/core/logx"
 	"github.com/tal-tech/go-zero/core/stores/cache"
 	"github.com/tal-tech/go-zero/core/stores/sqlx"
 	"github.com/tal-tech/go-zero/core/syncx"
@@ -44,9 +45,13 @@ func NewServiceContext(c config.Config) *ServiceContext {
 }
 
 func getClientByStorageEngine(c *config.Config) client.Client {
+
+	logx.Infof("存储引擎[%s]加载中...", c.StorageEngine)
+
 	switch c.StorageEngine {
+	case types.ENGINE_LOCAL:
+		return storage.NewLocalClient(c)
 	case types.ENGINE_MINIO:
-		logx.Infof("存储引擎[%s]加载中...", c.StorageEngine)
 		return newMinioClient(c)
 	}
 

@@ -21,10 +21,34 @@ type (
 )
 
 type (
+	downloadResp {
+		Url string `json:"url"`
+	}
+)
+
+type (
+	objectListReq {
+		Prefix     string `json:"prefix"`     //Only list objects with the prefix
+		StartAfter string `json:"startAfter"` //start listing lexically at this object onwards
+		Recursive  bool   `json:"recursive"`  //Ignore '/' delimiter
+		MaxKeys    int    `json:"maxKeys"`    //The maximum number of objects
+	}
+)
+
+type (
+	objectListResp {
+		ObjectName   string `json:"objectName"`
+		Size         int64  `json:"size"`
+		ETag         string `json:"eTag"`
+		LastModified string `json:"lastModified"`
+	}
+)
+
+type (
 	registerReq {
-		TenantID string `json:"tenantID"`
-		Namespace string `json:"namespace"`  // 租户下二级分类，如：平台、子公司等
-		UserID   string `json:"userID"`
+		TenantID  string `json:"tenantID"`
+		Namespace string `json:"namespace"` // 租户下二级分类，如：平台、子公司等
+		UserID    string `json:"userID"`
 	}
 )
 
@@ -53,21 +77,25 @@ type (
 service storage-api {
 	@doc "文件上传/FileUpload"
 	@handler ObjectHandler
-	post /upload() returns(uploadResp)
+	post /object/upload() returns(uploadResp)
 	
 	@doc "文件删除/FileRemove"
 	@handler RemoveHandler
-	post /remove(removeReq) returns()
+	post /object/remove(removeReq) returns()
 	
 	@doc "文件下载/FileDownload"
 	@handler DownloadHandler
-	get /download(downloadReq) returns()
+	get /object/download(downloadReq) returns(downloadResp)
+	
+	@doc "对象列表/ObjectList"
+	@handler ObjectListHandler
+	post /object/list(objectListReq) returns(objectListResp)
 	
 	@doc "注册用户/RegisterUser"
 	@handler RegisterHandler
-	post /registerUser(registerReq) returns(registerResp)
+	post /user/registerUser(registerReq) returns(registerResp)
 	
 	@doc "申请令牌/AskToken"
 	@handler TokenHandler
-	post /askToken(tokenReq) returns(tokenResp)
+	post /user/askToken(tokenReq) returns(tokenResp)
 }

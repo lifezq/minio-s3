@@ -6,13 +6,19 @@ import (
 	"crypto/cipher"
 	"fmt"
 	"io"
+	"strings"
+)
+
+const (
+	SECRET_TEXT       = "deltaphone store"
+	SECRET_KEY_PREFIX = "Ciph"
 )
 
 func GenerateSecretKey(key string) string {
 
-	bReader := bytes.NewReader([]byte("deltaphone minio"))
+	bReader := bytes.NewReader([]byte(SECRET_TEXT))
 
-	block, err := aes.NewCipher([]byte("mini" + key))
+	block, err := aes.NewCipher([]byte(fmt.Sprintf("%s%s", SECRET_KEY_PREFIX, key)))
 	if err != nil {
 		panic(err)
 	}
@@ -29,4 +35,8 @@ func GenerateSecretKey(key string) string {
 	}
 
 	return fmt.Sprintf("%x", out.Bytes())
+}
+
+func PathFilter(path string) string {
+	return strings.Trim(strings.Trim(path, " "), "/")
 }

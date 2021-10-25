@@ -3,8 +3,8 @@ package handler
 import (
 	"net/http"
 
-	"github.com/lifezq/minio-s3/internal/logic"
-	"github.com/lifezq/minio-s3/internal/svc"
+	"gitlab.energy-envision.com/storage/internal/logic"
+	"gitlab.energy-envision.com/storage/internal/svc"
 
 	"github.com/tal-tech/go-zero/rest/httpx"
 )
@@ -12,7 +12,7 @@ import (
 func ObjectHandler(ctx *svc.ServiceContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		l := logic.NewObjectLogic(r.Context(), ctx)
-		resp, err := l.Object()
+		resp, err := l.Object(r)
 		if err != nil {
 			httpx.Error(w, err)
 		} else {
