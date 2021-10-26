@@ -6,7 +6,8 @@ Datasource: root:123456@tcp(localhost:3306)/storage?charset=UTF8&parseTime=true
 StorageEngine: MiniO
 TokenExpireIn: 86400
 StorageHost: localhost:8888
-ValidNamespace: AI
+ValidNamespace: ai
+FolderMaxFiles: 1000
 CacheConf:
   - Host: 192.168.56.1:6379
     Type: cluster

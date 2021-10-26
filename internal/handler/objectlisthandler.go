@@ -18,6 +18,8 @@ func ObjectListHandler(ctx *svc.ServiceContext) http.HandlerFunc {
 			return
 		}
 
+		req.S3Authorization = r.Header.Get(types.S3_AUTHORIZATION)
+
 		l := logic.NewObjectListLogic(r.Context(), ctx)
 		resp, err := l.ObjectList(req)
 		if err != nil {

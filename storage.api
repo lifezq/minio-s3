@@ -6,7 +6,7 @@ type (
 
 type (
 	removeReq {
-		Bucket   string `json:"bucket"`
+	    S3Authorization string `json:"s3Authorization,optional"`
 		ObjectID string `json:"objectID"`
 		Path     string `json:"path"`
 	}
@@ -14,7 +14,7 @@ type (
 
 type (
 	downloadReq {
-		Bucket   string `json:"bucket"`
+	    S3Authorization string `json:"s3Authorization,optional"`
 		ObjectID string `json:"objectID"`
 		Path     string `json:"path"`
 	}
@@ -28,20 +28,24 @@ type (
 
 type (
 	objectListReq {
-		Prefix     string `json:"prefix"`     //Only list objects with the prefix
-		StartAfter string `json:"startAfter"` //start listing lexically at this object onwards
-		Recursive  bool   `json:"recursive"`  //Ignore '/' delimiter
-		MaxKeys    int    `json:"maxKeys"`    //The maximum number of objects
+	    S3Authorization string `json:"s3Authorization,optional"`
+		Prefix     string `json:"prefix,optional"`     //Only list objects with the prefix
 	}
 )
 
 type (
-	objectListResp {
+	objectInfo {
 		ObjectName   string `json:"objectName"`
 		Size         int64  `json:"size"`
 		ETag         string `json:"eTag"`
-		LastModified string `json:"lastModified"`
+		LastModified time.Time `json:"lastModified"`
+		Metadata     map[string]interface{} `json:"metadata"`
 	}
+
+	objectListResp {
+	    Items []objectInfo `json:"items"`
+	}
+
 )
 
 type (
@@ -61,9 +65,9 @@ type (
 
 type (
 	tokenReq {
-		AccessKey string `form:"accessKey"`
-		SecretKey string `form:"secretKey"`
-		Path      string `form:"path"`
+		AccessKey string `json:"accessKey"`
+		SecretKey string `json:"secretKey"`
+		Path      string `json:"path"`
 	}
 )
 

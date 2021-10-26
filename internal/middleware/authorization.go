@@ -1,28 +1,20 @@
 package middleware
 
 import (
-	"database/sql"
 	"errors"
 	"net/http"
 	"strings"
 
-	"gitlab.energy-envision.com/storage/internal/config"
 	"gitlab.energy-envision.com/storage/internal/types"
 
-	"github.com/tal-tech/go-zero/core/stores/cache"
-	"github.com/tal-tech/go-zero/core/syncx"
 	"github.com/tal-tech/go-zero/rest/httpx"
 )
 
 type Authorization struct {
-	cache cache.Cache
 }
 
-func NewAuthorization(c config.Config) *Authorization {
-	return &Authorization{
-		cache: cache.New(c.CacheConf, syncx.NewSingleFlight(), cache.NewStat(types.CACHE_REDIS_STATE),
-			sql.ErrNoRows, []cache.Option{}...),
-	}
+func NewAuthorization() *Authorization {
+	return &Authorization{}
 }
 
 func (a *Authorization) AuthorizationHandle(next http.HandlerFunc) http.HandlerFunc {

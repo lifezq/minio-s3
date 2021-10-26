@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"strings"
+	"time"
 )
 
 const (
@@ -39,4 +40,8 @@ func GenerateSecretKey(key string) string {
 
 func PathFilter(path string) string {
 	return strings.Trim(strings.Trim(path, " "), "/")
+}
+
+func PathWithDate(path string, loc *time.Location) string {
+	return fmt.Sprintf("%s/%s", PathFilter(path), time.Now().In(loc).Format("060102"))
 }

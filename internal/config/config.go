@@ -23,4 +23,5 @@ type Config struct {
 	TokenExpireIn  int64
 	StorageHost    string
 	ValidNamespace string
+	FolderMaxFiles uint16
 }

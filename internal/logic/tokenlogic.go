@@ -3,9 +3,14 @@ package logic
 import (
 	"context"
 	"fmt"
-	"github.com/tal-tech/go-zero/core/logx"
+	"strconv"
+
+	"gitlab.energy-envision.com/storage/client"
 	"gitlab.energy-envision.com/storage/internal/svc"
 	"gitlab.energy-envision.com/storage/internal/types"
+	"gitlab.energy-envision.com/storage/utils"
+
+	"github.com/tal-tech/go-zero/core/logx"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -35,13 +40,24 @@ func (l *TokenLogic) Token(req types.TokenReq) (*types.TokenResp, error) {
 
 	err = bcrypt.CompareHashAndPassword([]byte(user.SecretKey), []byte(req.SecretKey))
 	if err != nil {
-		l.Logger.Errorf("用户secretKey验证不通过：%s\n", err.Error())
+		l.Logger.Errorf("用户secretKey验证不通过：%s", err.Error())
 		return &types.TokenResp{}, fmt.Errorf("用户secretKey验证不通过")
+	}
+
+	folderInfo, err := l.svcCtx.Client.StatObject(context.Background(), types.BucketName(user.TenantId, user.Namespace),
+		fmt.Sprintf("%s/%s/", types.BucketHome(req.AccessKey),
+			utils.PathFilter(req.Path)), client.StatObjectOptions{})
+	if objectCount, ok := folderInfo.UserMetadata["Object-Count"]; ok {
+		count, _ := strconv.Atoi(objectCount)
+		if uint16(count) > l.svcCtx.Config.FolderMaxFiles {
+			l.Logger.Errorf("该路径下文件超过限制")
+			return &types.TokenResp{}, fmt.Errorf("该路径下文件超过限制")
+		}
 	}
 
 	s3Authorization, err := types.CreateToken(req.AccessKey, req.SecretKey, req.Path, l.svcCtx.Config.TokenExpireIn)
 	if err != nil {
-		l.Logger.Errorf("创建令牌发生错误：%s\n", err.Error())
+		l.Logger.Errorf("创建令牌发生错误：%s", err.Error())
 		return &types.TokenResp{}, fmt.Errorf("创建令牌发生错误")
 	}
 

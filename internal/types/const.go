@@ -16,6 +16,8 @@ const (
 
 	ENGINE_LOCAL = "Local"
 	ENGINE_MINIO = "MiniO"
+
+	META_VERSION = "v0"
 )
 
 func BucketName(tenantID, nameSpace string) string {

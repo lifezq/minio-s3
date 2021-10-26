@@ -3,9 +3,6 @@ package logic
 import (
 	"context"
 	"fmt"
-	"golang.org/x/crypto/bcrypt"
-	"os"
-	"os/exec"
 	"time"
 
 	"gitlab.energy-envision.com/storage/client"
@@ -16,6 +13,7 @@ import (
 
 	"github.com/rs/xid"
 	"github.com/tal-tech/go-zero/core/logx"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type RegisterLogic struct {
@@ -45,15 +43,14 @@ func (l *RegisterLogic) Register(req types.RegisterReq) (*types.RegisterResp, er
 	secretKey := utils.GenerateSecretKey(accessKey)
 	hashSecretKey, err := bcrypt.GenerateFromPassword([]byte(secretKey), 10)
 	if err != nil {
-		l.Logger.Errorf("用户secretKey生成错误, %s\n", err.Error())
+		l.Logger.Errorf("用户secretKey生成错误, %s", err.Error())
 		return &types.RegisterResp{}, fmt.Errorf("用户secretKey生成错误,%s", err.Error())
 	}
 
 	ctx := context.Background()
-	err = exec.CommandContext(ctx, "mc", []string{"admin", "user", "add",
-		l.svcCtx.Config.Minio.ServerName, accessKey, secretKey}...).Run()
+	err = l.svcCtx.Cmd.CreateUser(ctx, l.svcCtx.Config.Minio.ServerName, accessKey, secretKey)
 	if err != nil {
-		l.Logger.Errorf("创建用户失败：%s\n", err.Error())
+		l.Logger.Errorf("创建用户失败：%s", err.Error())
 		return &types.RegisterResp{}, fmt.Errorf("创建用户失败,%s", err.Error())
 	}
 
@@ -62,47 +59,26 @@ func (l *RegisterLogic) Register(req types.RegisterReq) (*types.RegisterResp, er
 	if err != nil || !exists {
 		err = l.svcCtx.Client.MakeBucket(ctx, bucket, client.MakeBucketOptions{})
 		if err != nil {
-			l.Logger.Errorf("创建bucket失败：%s\n", err.Error())
+			l.Logger.Errorf("创建bucket失败：%s", err.Error())
 			return &types.RegisterResp{}, fmt.Errorf("创建bucket失败,%s", err.Error())
 		}
 	}
 
-	policy := `{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":["s3:*"],"Resource":["arn:aws:s3:::` + bucket + `/` + types.BucketHome(accessKey) + `/*"]}]}`
-	policyFile := fmt.Sprintf("./%s.policy", accessKey)
-	fp, err := os.OpenFile(policyFile, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 644)
+	err = l.svcCtx.Cmd.AddPolicy(ctx, l.svcCtx.Config.Minio.ServerName, bucket, types.BucketPolicyName(req.TenantID, req.Namespace, req.UserID), accessKey)
 	if err != nil {
-		l.Logger.Errorf("写用户访问策略失败：%s\n", err.Error())
-		return &types.RegisterResp{}, fmt.Errorf("写用户访问策略失败,%s", err.Error())
-	}
-
-	fp.WriteString(policy)
-	fp.Close()
-	defer os.Remove(policyFile)
-
-	err = exec.CommandContext(ctx, "mc", []string{"admin", "policy", "add",
-		l.svcCtx.Config.Minio.ServerName, types.BucketPolicyName(req.TenantID, req.Namespace, req.UserID), policyFile}...).Run()
-	if err != nil {
-		l.Logger.Errorf("添加访问策略失败：%s\n", err.Error())
+		l.Logger.Errorf("添加访问策略失败：%s", err.Error())
 		return &types.RegisterResp{}, fmt.Errorf("添加访问策略失败,%s", err.Error())
 	}
 
-	err = exec.CommandContext(ctx, "mc", []string{"admin", "group", "add",
-		l.svcCtx.Config.Minio.ServerName, types.BucketGroupName(req.TenantID, req.Namespace), accessKey}...).Run()
+	err = l.svcCtx.Cmd.AddGroupUser(ctx, l.svcCtx.Config.Minio.ServerName, types.BucketGroupName(req.TenantID, req.Namespace), accessKey)
 	if err != nil {
-		l.Logger.Errorf("用户组添加用户失败：%s\n", err.Error())
+		l.Logger.Errorf("用户组添加用户失败：%s", err.Error())
 		return &types.RegisterResp{}, fmt.Errorf("用户组添加用户失败,%s", err.Error())
-	}
-
-	err = exec.CommandContext(ctx, "mc", []string{"admin", "policy", "set",
-		l.svcCtx.Config.Minio.ServerName, types.BucketPolicyName(req.TenantID, req.Namespace, req.UserID), "user=" + accessKey}...).Run()
-	if err != nil {
-		l.Logger.Errorf("设置用户权限失败：%s\n", err.Error())
-		return &types.RegisterResp{}, fmt.Errorf("设置用户权限失败,%s", err.Error())
 	}
 
 	id, err := l.svcCtx.UserModel.FindMaxId()
 	if err != nil {
-		l.Logger.Errorf("获取用户最大id失败, %s\n", err.Error())
+		l.Logger.Errorf("获取用户最大id失败, %s", err.Error())
 		return &types.RegisterResp{}, fmt.Errorf("获取用户最大id失败,%s", err.Error())
 	}
 
@@ -116,11 +92,11 @@ func (l *RegisterLogic) Register(req types.RegisterReq) (*types.RegisterResp, er
 		CreateAt:  time.Now().In(l.svcCtx.Loc),
 	})
 	if err != nil {
-		l.Logger.Errorf("创建用户失败：%s\n", err.Error())
+		l.Logger.Errorf("创建用户失败：%s", err.Error())
 		return &types.RegisterResp{}, fmt.Errorf("创建用户失败,%s", err.Error())
 	}
 
-	l.Logger.Infof("创建用户[%s]成功\n", accessKey)
+	l.Logger.Infof("创建用户[%s]成功", accessKey)
 
 	return &types.RegisterResp{
 		AccessKey: accessKey,
